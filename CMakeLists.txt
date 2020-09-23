@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.15..3.18)
 project(nleq2)
 
 set(target nleq2)
@@ -17,6 +17,7 @@ set(sources
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 add_library(${target}-static STATIC ${sources})
+set_target_properties(${target}-static PROPERTIES PUBLIC_HEADER "${headers}")
 
 if (WIN32)
     set_property(TARGET ${target}-static
@@ -36,16 +37,21 @@ target_link_libraries(${target}-static f2c)
 
 
 
+
 #Install required files
-install(FILES ${headers}
-        DESTINATION include/nleq2)
-
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/nleq2)
-file(COPY ${headers} DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/include/nleq2)
-
 
 install(TARGETS ${target}-static
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
+        EXPORT ${target}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${target}
         )
 
+# install the export info
+install(
+        EXPORT ${target}
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake
+        NAMESPACE ${target}::
+        FILE ${target}-config.cmake
+)
