@@ -334,10 +334,10 @@ L20:
 	    t = sqrt(h__);
 /*          ---------------------------------------------------------- */
 /*          2.3.0 A-priori test on pseudo-rank */
-	    if (k == 1 || k == iranc1) {
-		dd = t / *cond;
-	    }
-	    if (t <= dd || k > irankh) {
+        if (k == 1 || k == iranc1) {
+            dd = t < 1e-15 ? t : t / *cond;
+        }
+        if (t - dd <= 1e-15 || k > irankh) {
 /*            ------------------------------------------------------ */
 /*             2.3.1 Rank reduction */
 		irankh = k - 1;
